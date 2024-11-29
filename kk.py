@@ -251,8 +251,8 @@ def get_username_from_id(user_id):
             return user.get('username', 'N/A')
     return "N/A"
 
-def is_admin(user_id):
-    return user_id in ADMIN_IDS
+def is_AUTHORIZED_USERS(user_id):
+    return user_id in AUTHORIZED_USERS_IDS
 
 def load_keys():
     try:
@@ -285,7 +285,7 @@ def genkey_command(message):
     user_id = message.from_user.id
     chat_id = message.chat.id
 
-    if not is_admin(user_id):
+    if not is_AUTHORIZED_USERS(user_id):
         bot.send_message(chat_id, "*You are not authorized to generate keys.\nContact Owner: @Hmm_Smokie*", parse_mode='Markdown')
         return
 
@@ -379,7 +379,7 @@ def remove_user_command(message):
     user_id = message.from_user.id
     chat_id = message.chat.id
 
-    if not is_admin(user_id):
+    if not is_AUTHORIZED_USERS(user_id):
         bot.send_message(chat_id, "*You are not authorized to remove users.\nContact Owner:- @Hmm_Smokie*", parse_mode='Markdown')
         return
 
@@ -400,7 +400,7 @@ def list_users_command(message):
     user_id = message.from_user.id
     chat_id = message.chat.id
 
-    if not is_admin(user_id):
+    if not is_AUTHORIZED_USERS(user_id):
         bot.send_message(chat_id, "*You are not authorized to view the users.*", parse_mode='Markdown')
         return
 
