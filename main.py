@@ -100,8 +100,8 @@ def stop_attack(user_id):
 # ------------------------------------------------------------------------------------------------------------------------
 
 # 🛡️ Storage for keys and user access
-ACCESS_KEYS = {}  # Format: {"key": expiration_date}
-ACTIVE_USERS = {}  # Format: {"user_id": expiration_date}
+ACCESS_KEYS = {key.txt}  # Format: {"key": expiration_date}
+ACTIVE_USERS = {user.txt}  # Format: {"user_id": expiration_date}
 
 # 🔑 Admin command to generate a key
 @bot.message_handler(commands=['key'])
