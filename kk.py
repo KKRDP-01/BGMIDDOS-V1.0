@@ -9,6 +9,7 @@ import sys
 import datetime
 import logging
 import socket
+import json
 
 # 🎛️ Function to install required packages
 def install_requirements():
@@ -96,6 +97,137 @@ def stop_attack(user_id):
         bot.send_message(user_id, "🔴 All Attack stopped.")
     else:
         bot.send_message(user_id, "❌ No active attack found >ᴗ<")
+
+# ---------------------------------------------------------------------------------------------------------------------------
+
+# File paths
+USERS_FILE = "users.json"
+KEYS_FILE = "keys.json"
+REDEEMED_KEYS_FILE = "redeemed_keys.json"
+
+# ---------------------------
+# User Management Functions
+# ---------------------------
+
+def load_users():
+    try:
+        with open(USERS_FILE, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}  # Return empty dictionary if file doesn't exist
+
+def save_users(users):
+    with open(USERS_FILE, 'w') as f:
+        json.dump(users, f, indent=4)
+
+def get_username_from_authorised_user_id(user_id):
+    users = load_users()
+    return users.get(user_id, {}).get("username")
+
+def is_authorised_user(user_id):
+    users = load_users()
+    return user_id in users
+
+def remove_user(user_id):
+    users = load_users()
+    if user_id in users:
+        del users[user_id]
+        save_users(users)
+        return True
+    return False
+
+def list_users():
+    users = load_users()
+    return [{"user_id": user_id, "username": data["username"]} for user_id, data in users.items()]
+
+# ---------------------------
+# Key Management Functions
+# ---------------------------
+
+def load_keys():
+    try:
+        with open(KEYS_FILE, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+
+def save_keys(keys):
+    with open(KEYS_FILE, 'w') as f:
+        json.dump(keys, f, indent=4)
+
+def load_redeemed_keys():
+    try:
+        with open(REDEEMED_KEYS_FILE, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+
+def save_redeemed_keys(redeemed_keys):
+    with open(REDEEMED_KEYS_FILE, 'w') as f:
+        json.dump(redeemed_keys, f, indent=4)
+
+def generate_keys(count=1):
+    keys = [f"KEY-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}" for _ in range(count)]
+    existing_keys = load_keys()
+    existing_keys.extend(keys)
+    save_keys(existing_keys)
+    return keys
+
+def redeem_key(user_id, key):
+    keys = load_keys()
+    redeemed_keys = load_redeemed_keys()
+    if key in keys and key not in redeemed_keys:
+        # Add user and redeem the key
+        users = load_users()
+        if user_id not in users:
+            users[user_id] = {"username": f"user_{user_id}", "keys_redeemed": []}
+        users[user_id]["keys_redeemed"].append(key)
+        save_users(users)
+        redeemed_keys.append(key)
+        save_redeemed_keys(redeemed_keys)
+        keys.remove(key)
+        save_keys(keys)
+        return True
+    return False
+
+# ---------------------------
+# Command Handlers
+# ---------------------------
+
+def generate_key_command(count=1):
+    return generate_keys(count)
+
+def redeem_command(user_id, key):
+    return redeem_key(user_id, key)
+
+def remove_user_command(user_id):
+    return remove_user(user_id)
+
+def list_users_command():
+    return list_users()
+
+# ---------------------------
+# Button Handlers
+# ---------------------------
+
+def attack_button_handler(user_id):
+    if is_authorised_user(user_id):
+        username = get_username_from_authorised_user_id(user_id)
+        return f"Attack triggered by {username}!"
+    return "Unauthorized access!"
+
+# ---------------------------
+# Account Management
+# ---------------------------
+
+def my_account(user_id):
+    users = load_users()
+    return users.get(user_id, {})
+
+def all_accounts():
+    return list_users()
+
+# ---------------------------------------------------------------------------------------------------------------------------
 
 # 🕰️ Function to calculate bot uptime ˏˋ°•*⁀➷ˏˋ°•*⁀➷ˏˋ°•*⁀➷ˏˋ°•*⁀➷ˏˋ°•*⁀➷ˏˋ°•*⁀➷ˏˋ°•*⁀➷
 def get_uptime():
