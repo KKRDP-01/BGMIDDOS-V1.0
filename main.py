@@ -9,6 +9,11 @@ import sys
 import datetime
 import logging
 import socket
+import uuid
+
+# Generate a unique and complex key
+new_key = str(uuid.uuid4()).replace('-', '')[:12].upper()  # Example: '9F2A8E7C6B3D'
+
 
 # 🎛️ Function to install required packages
 def install_requirements():
@@ -146,9 +151,21 @@ def redeem_key(message):
 
 # 🔐 Check user access before processing commands
 def check_user_access(user_id):
-    if user_id in ACTIVE_USERS and ACTIVE_USERS[user_id] > datetime.datetime.now():
-        return True
+    if user_id in ACTIVE_USERS:
+        if ACTIVE_USERS[user_id] > datetime.datetime.now():
+            return True
+        else:
+            del ACTIVE_USERS[user_id]  # Clean up expired access
+            print(f"Access expired for user {user_id}.")
     return False
+
+@bot.message_handler(commands=['some_command'])
+def some_command_handler(message):
+    if not check_user_access(message.from_user.id):
+        bot.send_message(message.chat.id, "❌ Access Denied! Please redeem a valid key.")
+        return
+    # Continue with command logic...
+
 
     
 
